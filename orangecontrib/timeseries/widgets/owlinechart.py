@@ -436,6 +436,8 @@ class LineChartContextHandler(DomainContextHandler):
         all_vars.update(metas)
 
         value = set(y for x in context.values["attrs"] for y in x)
+        if not value:
+            return self.NO_MATCH
         return sum(all_vars.get(attr) == vtype for attr, vtype in value) / len(
             value
         )
@@ -496,7 +498,7 @@ class OWLineChart(OWWidget):
         config.sigClosed.connect(lambda ax, widget:
                                  self.add_button.setDisabled(False))
         self.configs.append(config)
-        self.add_button.setDisabled(len(self.configs) >= 5)
+        self.add_button.setDisabled(len(self.configs) >= 10)
         config.sigClosed.connect(lambda ax, widget: self.remove_plot(widget))
 
         self.configsArea.layout().addWidget(config)
@@ -596,7 +598,7 @@ class OWLineChart(OWWidget):
             self.is_logit = [False]
             # context is only open when features not provided on input
             # when provided features defines the selection
-            self.openContext(self.data.domain)
+            # self.openContext(self.data.domain)
 
     def update_plots(self) -> None:
         """
